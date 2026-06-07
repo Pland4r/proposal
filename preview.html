@@ -1,0 +1,887 @@
+'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdeljalil & Asmae 💍</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky1: #0a0018;
+    --sky2: #1e0440;
+    --sky3: #4a0e6e;
+    --sky4: #8b1a6b;
+    --sky5: #c93d6e;
+    --sky6: #f07090;
+    --floor: #1a0030;
+    --gold: #f5c842;
+    --rose: #f472b6;
+    --ivory: #fdf6ee;
+    --skin1: #f4c5a0;
+    --skin2: #e8a87c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  #app {
+    width: 100vw; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── SKY ── */
+  #sky {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      #04000f 0%, #0d0130 18%, #2a0650 35%,
+      #5a1060 52%, #9b2468 68%,
+      #d44e72 80%, #f07888 90%, #f9a8a8 100%);
+  }
+
+  /* ── STARS ── */
+  #stars { position:absolute; inset:0; pointer-events:none; }
+  .star {
+    position:absolute; border-radius:50%;
+    background:#fff;
+    animation: twinkle var(--d,3s) var(--delay,0s) infinite alternate ease-in-out;
+  }
+  @keyframes twinkle {
+    from { opacity: var(--lo, 0.2); transform: scale(1); }
+    to   { opacity: var(--hi, 1);   transform: scale(1.4); }
+  }
+
+  /* ── MOON ── */
+  #moon {
+    position:absolute; top:6%; right:12%;
+    width:70px; height:70px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #fffbe0, #f5e080 60%, #d4a820);
+    box-shadow: 0 0 40px 12px rgba(245,220,80,0.25), 0 0 80px 30px rgba(245,200,60,0.1);
+    animation: moonGlow 4s ease-in-out infinite alternate;
+  }
+  @keyframes moonGlow {
+    from { box-shadow: 0 0 40px 12px rgba(245,220,80,0.25), 0 0 80px 30px rgba(245,200,60,0.1); }
+    to   { box-shadow: 0 0 55px 18px rgba(245,220,80,0.38), 0 0 110px 45px rgba(245,200,60,0.18); }
+  }
+
+  /* ── GROUND ── */
+  #ground {
+    position:absolute; bottom:0; left:0; right:0;
+    height:28%;
+    background: linear-gradient(180deg, #2a0840 0%, #160328 40%, #0a0118 100%);
+    border-radius: 60% 60% 0 0 / 12% 12% 0 0;
+  }
+  #ground::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, transparent, rgba(200,100,160,0.6), rgba(245,200,80,0.4), rgba(200,100,160,0.6), transparent);
+  }
+
+  /* ── ROSE PATH (floor petals) ── */
+  .floor-petal {
+    position:absolute;
+    border-radius: 80% 20% 80% 20%;
+    opacity:0.7;
+    animation: floorPetalSway 3s ease-in-out infinite alternate;
+  }
+  @keyframes floorPetalSway {
+    from { transform: rotate(var(--r,0deg)) scale(1); }
+    to   { transform: rotate(calc(var(--r,0deg) + 8deg)) scale(1.05); }
+  }
+
+  /* ── SCENE CONTAINER ── */
+  #scene {
+    position:absolute;
+    bottom: 20%;
+    left:50%; transform:translateX(-50%);
+    width: min(700px, 96vw);
+    height: 420px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:0;
+  }
+
+  /* ── SVG CHARACTERS ── */
+  #man-svg, #woman-svg {
+    position:absolute;
+    bottom:0;
+    transition: none;
+  }
+  #man-svg { left:50%; transform:translateX(-200px); transform-origin:bottom center; }
+  #woman-svg { left:50%; transform:translateX(20px); transform-origin:bottom center; }
+
+  /* ── RING BOX ── */
+  #ringbox {
+    animation: ringPulse 1.2s ease-in-out infinite;
+  }
+  @keyframes ringPulse {
+    0%,100% { filter: drop-shadow(0 0 4px rgba(245,200,60,0.6)); }
+    50%      { filter: drop-shadow(0 0 12px rgba(245,200,60,1)); }
+  }
+
+  /* ── FALLING PETALS ── */
+  #petals-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+  .fpetal {
+    position:absolute; top:-20px;
+    border-radius: 80% 20% 80% 20%;
+    animation: petalFall var(--fd,6s) var(--fdelay,0s) linear infinite;
+    opacity:0;
+  }
+  @keyframes petalFall {
+    0%   { opacity:0; transform: translateY(0) rotate(0deg) translateX(0); }
+    10%  { opacity:0.85; }
+    90%  { opacity:0.7; }
+    100% { opacity:0; transform: translateY(105vh) rotate(480deg) translateX(var(--fdx,20px)); }
+  }
+
+  /* ── HEARTS ── */
+  .heart-float {
+    position:absolute;
+    font-size: var(--hs, 24px);
+    animation: heartRise var(--hd,2.5s) ease-out forwards;
+    pointer-events:none;
+    opacity:0;
+  }
+  @keyframes heartRise {
+    0%   { opacity:0; transform: translateY(0) scale(0.3) rotate(var(--hr,0deg)); }
+    20%  { opacity:1; transform: translateY(-30px) scale(1) rotate(var(--hr,0deg)); }
+    100% { opacity:0; transform: translateY(var(--hy,-180px)) scale(0.6) rotate(calc(var(--hr,0deg) + 20deg)); }
+  }
+
+  /* ── SPARKLES ── */
+  .sparkle {
+    position:absolute;
+    width:6px; height:6px;
+    background:#ffd700;
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    animation: sparklePop var(--sd,1s) var(--sdelay,0s) ease-out infinite;
+    opacity:0;
+  }
+  @keyframes sparklePop {
+    0%   { opacity:0; transform:scale(0) rotate(0deg); }
+    30%  { opacity:1; transform:scale(1.4) rotate(72deg); }
+    70%  { opacity:0.8; transform:scale(1) rotate(144deg); }
+    100% { opacity:0; transform:scale(0) rotate(216deg) translate(var(--sx,10px),var(--sy,-10px)); }
+  }
+
+  /* ── UI OVERLAY ── */
+  #ui {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:flex-end;
+    padding-bottom: 3.5vh;
+    pointer-events:none;
+  }
+
+  #title-block {
+    position:absolute;
+    top:5%; left:0; right:0;
+    text-align:center;
+    opacity:0;
+    animation: fadeSlideDown 1.4s 0.5s ease forwards;
+  }
+  @keyframes fadeSlideDown {
+    from { opacity:0; transform:translateY(-30px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  #title-block h1 {
+    font-family:'Playfair Display', serif;
+    font-size: clamp(36px,6vw,68px);
+    font-style:italic;
+    color: #ffeef6;
+    letter-spacing:4px;
+    line-height:1;
+    text-shadow: 0 0 40px rgba(255,180,210,0.5);
+  }
+  #title-block p {
+    font-family:'Cormorant Garamond', serif;
+    font-size: clamp(12px,1.8vw,16px);
+    letter-spacing:6px;
+    color:rgba(255,210,235,0.65);
+    margin-top:8px;
+    text-transform:uppercase;
+    font-style:italic;
+  }
+
+  #msg-box {
+    font-family:'Playfair Display', serif;
+    font-size: clamp(18px,2.8vw,26px);
+    font-style:italic;
+    color:#ffe8f4;
+    text-align:center;
+    padding:0 5%;
+    min-height:40px;
+    text-shadow:0 0 20px rgba(255,140,200,0.4);
+    opacity:0;
+    transition: opacity 0.7s;
+    pointer-events:none;
+    margin-bottom:16px;
+  }
+
+  #btn-group {
+    display:flex; gap:16px;
+    pointer-events:all;
+    opacity:0;
+    transition:opacity 0.7s;
+  }
+
+  .btn {
+    font-family:'Cormorant Garamond', serif;
+    font-size: clamp(13px,1.6vw,16px);
+    letter-spacing:3px;
+    text-transform:uppercase;
+    padding:14px 44px;
+    border-radius:60px;
+    border:none; cursor:pointer;
+    transition:transform 0.18s, box-shadow 0.18s;
+  }
+  .btn-yes {
+    background: linear-gradient(135deg,#e8538a,#b23fc9);
+    color:#fff;
+    box-shadow:0 4px 22px rgba(220,80,160,0.4);
+  }
+  .btn-yes:hover { transform:scale(1.07); box-shadow:0 7px 32px rgba(220,80,160,0.65); }
+  .btn-no {
+    background:rgba(255,255,255,0.07);
+    color:rgba(255,215,240,0.8);
+    border:1px solid rgba(255,180,220,0.25);
+  }
+  .btn-no:hover { background:rgba(255,255,255,0.14); transform:scale(1.04); }
+
+  #celebrate {
+    font-family:'Playfair Display', serif;
+    font-size: clamp(20px,3.2vw,32px);
+    font-style:italic;
+    color:#ffe0ef;
+    text-align:center;
+    padding:0 5%;
+    line-height:1.6;
+    text-shadow:0 0 30px rgba(255,160,210,0.7);
+    opacity:0;
+    transition:opacity 1.2s;
+    pointer-events:none;
+    margin-bottom:14px;
+  }
+
+  /* ── GLOW HALO behind characters ── */
+  #halo {
+    position:absolute;
+    bottom:0; left:50%; transform:translateX(-50%);
+    width:320px; height:200px;
+    background:radial-gradient(ellipse at 50% 80%, rgba(200,80,160,0.18) 0%, transparent 70%);
+    pointer-events:none;
+    transition:opacity 1s;
+  }
+
+  /* character walk animation */
+  @keyframes walkBounce {
+    0%,100% { transform: translateY(0) rotate(-0.5deg); }
+    50%      { transform: translateY(-5px) rotate(0.5deg); }
+  }
+
+  /* stand up from kneel */
+  @keyframes standUp {
+    0%   { transform: translateX(-200px) translateY(30px) scaleY(0.82); }
+    100% { transform: translateX(-200px) translateY(0) scaleY(1); }
+  }
+
+  /* confetti burst */
+  .conf {
+    position:absolute;
+    width: var(--cw,8px); height: var(--ch,8px);
+    border-radius: var(--cr,2px);
+    background: var(--cc,#f472b6);
+    animation: confFly var(--cd,1.5s) var(--cdelay,0s) ease-out forwards;
+    opacity:0;
+  }
+  @keyframes confFly {
+    0%   { opacity:1; transform:translate(0,0) rotate(0deg); }
+    100% { opacity:0; transform:translate(var(--cx,50px),var(--cy,-200px)) rotate(var(--crot,360deg)); }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sky"></div>
+  <div id="stars"></div>
+  <div id="moon"></div>
+
+  <!-- Floor petals scattered on ground -->
+  <div id="floor-petals"></div>
+
+  <div id="ground"></div>
+
+  <!-- Falling petals layer -->
+  <div id="petals-layer"></div>
+
+  <!-- Characters -->
+  <div id="scene">
+    <div id="halo"></div>
+
+    <!-- WOMAN – wedding dress, standing right -->
+    <svg id="woman-svg" width="160" height="380" viewBox="0 0 160 380">
+      <!-- Dress train/skirt - large flowing A-line -->
+      <path d="M80 210 Q30 260 15 360 Q60 370 80 368 Q100 370 145 360 Q130 260 80 210Z"
+            fill="#f8f4ff" stroke="#e8d8ff" stroke-width="0.8"/>
+      <!-- Dress inner sheen -->
+      <path d="M80 215 Q55 255 45 340 Q65 348 80 348"
+            fill="none" stroke="rgba(200,180,255,0.5)" stroke-width="1.5"/>
+      <path d="M80 215 Q105 255 115 340"
+            fill="none" stroke="rgba(200,180,255,0.4)" stroke-width="1"/>
+      <!-- Dress overlay layer -->
+      <path d="M70 210 Q40 240 25 340 Q50 355 80 355 Q110 355 135 340 Q120 240 90 210Z"
+            fill="rgba(248,244,255,0.4)"/>
+      <!-- Waist sash bow -->
+      <path d="M60 205 Q80 215 100 205" stroke="#ddd6fe" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="65" cy="205" rx="9" ry="5" fill="#ddd6fe" opacity="0.8"/>
+      <ellipse cx="95" cy="205" rx="9" ry="5" fill="#ddd6fe" opacity="0.8"/>
+      <circle cx="80" cy="207" r="4" fill="#c4b5fd"/>
+      <!-- Bodice -->
+      <path d="M62 155 Q58 180 60 210 Q80 218 100 210 Q102 180 98 155Z"
+            fill="#ede9fe" stroke="#d8b4fe" stroke-width="0.6"/>
+      <!-- Sweetheart neckline -->
+      <path d="M62 155 Q70 148 78 154 Q82 148 90 148 Q98 154 98 155"
+            fill="#ede9fe" stroke="#c4b5fd" stroke-width="1"/>
+      <!-- Lace detail on bodice -->
+      <path d="M68 162 Q80 170 92 162" fill="none" stroke="rgba(200,180,255,0.6)" stroke-width="1"/>
+      <path d="M66 172 Q80 178 94 172" fill="none" stroke="rgba(200,180,255,0.4)" stroke-width="0.8"/>
+
+      <!-- Veil -->
+      <path d="M62 118 Q35 155 28 230 Q40 235 50 225"
+            fill="none" stroke="rgba(248,244,255,0.75)" stroke-width="5" stroke-linecap="round"/>
+      <path d="M68 116 Q42 160 36 250"
+            fill="none" stroke="rgba(240,235,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+      <!-- Veil lace edge -->
+      <path d="M32 228 Q40 235 48 225 Q50 235 58 228"
+            fill="none" stroke="rgba(220,210,255,0.5)" stroke-width="1"/>
+
+      <!-- Neck -->
+      <rect x="74" y="140" width="12" height="16" rx="5" fill="#f4c5a0"/>
+      <!-- Head -->
+      <ellipse cx="80" cy="126" rx="18" ry="22" fill="#f4c5a0"/>
+      <!-- Hair – elegant updo -->
+      <ellipse cx="80" cy="113" rx="17" ry="10" fill="#3d2010"/>
+      <path d="M63 118 Q62 108 68 104 Q80 100 92 104 Q98 108 97 118"
+            fill="#3d2010"/>
+      <!-- Hair bun -->
+      <ellipse cx="80" cy="104" rx="10" ry="7" fill="#4a2814"/>
+      <ellipse cx="80" cy="104" rx="7" ry="5" fill="#3d2010"/>
+      <!-- Tiara -->
+      <path d="M66 112 L68 104 L72 110 L76 100 L80 108 L84 100 L88 110 L92 104 L94 112"
+            fill="none" stroke="#ffd700" stroke-width="1.8" stroke-linejoin="round"/>
+      <circle cx="80" cy="100" r="3" fill="#ffd700"/>
+      <circle cx="72" cy="110" r="2" fill="#ffd700"/>
+      <circle cx="88" cy="110" r="2" fill="#ffd700"/>
+
+      <!-- Eyes (normal) -->
+      <g id="w-eyes-open">
+        <ellipse cx="73" cy="126" rx="3.5" ry="4" fill="#3d2010"/>
+        <ellipse cx="87" cy="126" rx="3.5" ry="4" fill="#3d2010"/>
+        <circle cx="74.5" cy="124.5" r="1.2" fill="#fff"/>
+        <circle cx="88.5" cy="124.5" r="1.2" fill="#fff"/>
+        <!-- Lashes -->
+        <path d="M69 122 Q73 119 77 122" fill="none" stroke="#3d2010" stroke-width="1.3"/>
+        <path d="M83 122 Q87 119 91 122" fill="none" stroke="#3d2010" stroke-width="1.3"/>
+      </g>
+      <!-- Eyes (closed/kissing) -->
+      <g id="w-eyes-closed" opacity="0">
+        <path d="M69 125 Q73 121 77 125" fill="none" stroke="#3d2010" stroke-width="1.8"/>
+        <path d="M83 125 Q87 121 91 125" fill="none" stroke="#3d2010" stroke-width="1.8"/>
+        <path d="M69 122 Q73 118 77 122" fill="none" stroke="#3d2010" stroke-width="1.2"/>
+        <path d="M83 122 Q87 118 91 122" fill="none" stroke="#3d2010" stroke-width="1.2"/>
+      </g>
+      <!-- Blush -->
+      <ellipse cx="67" cy="131" rx="5" ry="3.5" fill="rgba(255,150,180,0.45)"/>
+      <ellipse cx="93" cy="131" rx="5" ry="3.5" fill="rgba(255,150,180,0.45)"/>
+      <!-- Nose -->
+      <path d="M79 132 Q80 135 81 132" fill="none" stroke="rgba(180,120,90,0.5)" stroke-width="1"/>
+      <!-- Lips -->
+      <path d="M74 138 Q80 142 86 138" fill="none" stroke="#d4607a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M74 138 Q80 135 86 138" fill="rgba(220,100,130,0.2)"/>
+
+      <!-- Arms -->
+      <!-- Left arm at side, slightly out -->
+      <path d="M62 158 Q50 175 45 195"
+            stroke="#f4c5a0" stroke-width="12" stroke-linecap="round" fill="none"/>
+      <!-- Left hand -->
+      <ellipse cx="44" cy="198" rx="8" ry="7" fill="#f4c5a0"/>
+      <!-- Right arm holding bouquet -->
+      <path d="M98 158 Q112 170 118 190"
+            stroke="#f4c5a0" stroke-width="12" stroke-linecap="round" fill="none"/>
+      <!-- Bouquet -->
+      <circle cx="120" cy="198" r="16" fill="#e05080" opacity="0.3"/>
+      <circle cx="120" cy="196" r="6" fill="#f43f5e"/>
+      <circle cx="112" cy="200" r="5" fill="#fb7185"/>
+      <circle cx="128" cy="200" r="5" fill="#e879a0"/>
+      <circle cx="118" cy="206" r="4" fill="#fda4af"/>
+      <circle cx="124" cy="207" r="4" fill="#f9a8d4"/>
+      <!-- Bouquet leaves -->
+      <path d="M108 206 Q104 215 110 218" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+      <path d="M130 206 Q134 215 128 218" fill="none" stroke="#4ade80" stroke-width="1.5"/>
+    </svg>
+
+    <!-- MAN – suit, starts kneeling -->
+    <svg id="man-svg" width="160" height="380" viewBox="0 0 160 380">
+
+      <!-- === KNEELING POSE (shown first) === -->
+      <g id="man-kneel" opacity="1">
+        <!-- Back leg (kneeling, behind) -->
+        <path d="M85 240 Q88 290 90 330 Q84 332 76 330 Q74 290 77 240Z"
+              fill="#1a1650"/>
+        <!-- Front leg (bent, going forward) -->
+        <path d="M63 240 Q55 270 40 290 L48 296 Q65 278 72 245Z"
+              fill="#1a1650"/>
+        <!-- Kneeling foot -->
+        <path d="M35 290 Q28 292 26 298 Q35 302 52 298 L52 290Z"
+              fill="#0f0d30"/>
+        <!-- Jacket body -->
+        <path d="M56 140 Q50 175 50 240 Q80 252 110 240 Q110 175 104 140Z"
+              fill="#1e1a5e"/>
+        <!-- Jacket lapels -->
+        <path d="M80 145 L62 168 L68 240" fill="none" stroke="#2d2878" stroke-width="2"/>
+        <path d="M80 145 L98 168 L92 240" fill="none" stroke="#2d2878" stroke-width="2"/>
+        <!-- Shirt white -->
+        <path d="M75 148 L80 210 L85 148" fill="#eeeeff" opacity="0.9"/>
+        <!-- Tie -->
+        <rect x="77" y="150" width="6" height="38" rx="2" fill="#5b21b6"/>
+        <path d="M77 150 L80 145 L83 150" fill="#5b21b6"/>
+        <!-- Pocket square -->
+        <rect x="96" y="155" width="10" height="8" rx="1" fill="rgba(244,114,182,0.7)"/>
+        <!-- Buttons -->
+        <circle cx="80" cy="195" r="2" fill="#12106e"/>
+        <circle cx="80" cy="210" r="2" fill="#12106e"/>
+        <!-- Suit shoulders -->
+        <rect x="46" y="140" width="14" height="8" rx="3" fill="#1e1a5e"/>
+        <rect x="100" y="140" width="14" height="8" rx="3" fill="#1e1a5e"/>
+        <!-- Neck -->
+        <rect x="74" y="126" width="12" height="16" rx="5" fill="#f0c8a8"/>
+        <!-- Head -->
+        <ellipse cx="80" cy="112" rx="18" ry="22" fill="#f0c8a8"/>
+        <!-- Hair -->
+        <path d="M62 106 Q64 92 80 89 Q96 92 98 106" fill="#2a1608"/>
+        <path d="M62 110 Q62 95 80 92 Q98 95 98 110" fill="#2a1608"/>
+        <!-- Eye brows (hopeful) -->
+        <path d="M68 103 Q72 99 76 103" fill="none" stroke="#2a1608" stroke-width="1.5"/>
+        <path d="M84 103 Q88 99 92 103" fill="none" stroke="#2a1608" stroke-width="1.5"/>
+        <!-- Eyes (hopeful, open wide) -->
+        <ellipse cx="72" cy="111" rx="3.5" ry="4" fill="#2a1608"/>
+        <ellipse cx="88" cy="111" rx="3.5" ry="4" fill="#2a1608"/>
+        <circle cx="73.5" cy="109.5" r="1.3" fill="#fff"/>
+        <circle cx="89.5" cy="109.5" r="1.3" fill="#fff"/>
+        <!-- Hopeful smile -->
+        <path d="M73 120 Q80 126 87 120" fill="none" stroke="#b07050" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Ears -->
+        <ellipse cx="62" cy="113" rx="5" ry="7" fill="#f0c8a8"/>
+        <ellipse cx="98" cy="113" rx="5" ry="7" fill="#f0c8a8"/>
+        <!-- Left arm extended with ring box -->
+        <path d="M56 152 Q38 155 24 162"
+              stroke="#f0c8a8" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <!-- Left hand -->
+        <ellipse cx="20" cy="164" rx="8" ry="7" fill="#f0c8a8"/>
+        <!-- Ring box on palm -->
+        <g id="ringbox">
+          <rect x="4" y="152" width="28" height="19" rx="4" fill="#6d28d9"/>
+          <rect x="4" y="152" width="28" height="10" rx="4" fill="#5b21b6"/>
+          <!-- Box hinge -->
+          <line x1="4" y1="162" x2="32" y2="162" stroke="#4c1d95" stroke-width="0.8"/>
+          <!-- Ring inside -->
+          <circle cx="18" cy="157" r="5" fill="none" stroke="#ffd700" stroke-width="2.2"/>
+          <!-- Diamond -->
+          <polygon points="18,152 21,157 18,162 15,157" fill="#e0f2ff" opacity="0.9"/>
+          <polygon points="18,153 20,157 18,160 16,157" fill="#bfdbfe"/>
+          <!-- Sparkles around box -->
+          <path d="M2 150 L3 146 L4 150 L8 151 L4 152 L3 156 L2 152 L-2 151Z" fill="#ffd700" opacity="0.9"/>
+          <path d="M30 148 L31 145 L32 148 L35 149 L32 150 L31 153 L30 150 L27 149Z" fill="#ffd700" opacity="0.7"/>
+        </g>
+        <!-- Right arm resting on knee -->
+        <path d="M104 152 Q120 170 126 190"
+              stroke="#1e1a5e" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <ellipse cx="128" cy="194" rx="8" ry="7" fill="#f0c8a8"/>
+      </g>
+
+      <!-- === STANDING POSE (hidden first, shown after animation) === -->
+      <g id="man-stand" opacity="0">
+        <!-- Legs -->
+        <rect x="66" y="235" width="18" height="110" rx="5" fill="#1a1650"/>
+        <rect x="86" y="235" width="18" height="110" rx="5" fill="#1a1650"/>
+        <!-- Shoes -->
+        <path d="M60 340 Q48 342 46 348 Q56 352 76 350 L76 340Z" fill="#0f0d30"/>
+        <path d="M88 340 Q100 342 102 348 Q90 352 72 352 L72 340Z" fill="#0f0d30" transform="translate(18,0)"/>
+        <!-- Jacket -->
+        <path d="M52 140 Q48 185 50 235 Q80 248 110 235 Q112 185 108 140Z" fill="#1e1a5e"/>
+        <!-- Lapels -->
+        <path d="M80 145 L60 170 L66 235" fill="none" stroke="#2d2878" stroke-width="2"/>
+        <path d="M80 145 L100 170 L94 235" fill="none" stroke="#2d2878" stroke-width="2"/>
+        <!-- Shirt -->
+        <path d="M75 148 L80 215 L85 148" fill="#eeeeff" opacity="0.9"/>
+        <!-- Tie -->
+        <rect x="77" y="150" width="6" height="42" rx="2" fill="#5b21b6"/>
+        <path d="M77 150 L80 145 L83 150" fill="#5b21b6"/>
+        <!-- Pocket square -->
+        <rect x="96" y="155" width="10" height="8" rx="1" fill="rgba(244,114,182,0.7)"/>
+        <!-- Buttons -->
+        <circle cx="80" cy="198" r="2" fill="#12106e"/>
+        <circle cx="80" cy="215" r="2" fill="#12106e"/>
+        <!-- Shoulders -->
+        <rect x="44" y="140" width="14" height="8" rx="3" fill="#1e1a5e"/>
+        <rect x="102" y="140" width="14" height="8" rx="3" fill="#1e1a5e"/>
+        <!-- Neck -->
+        <rect x="74" y="126" width="12" height="16" rx="5" fill="#f0c8a8"/>
+        <!-- Head -->
+        <ellipse cx="80" cy="112" rx="18" ry="22" fill="#f0c8a8"/>
+        <!-- Hair -->
+        <path d="M62 106 Q64 92 80 89 Q96 92 98 106" fill="#2a1608"/>
+        <path d="M62 110 Q62 95 80 92 Q98 110" fill="#2a1608"/>
+        <!-- Eyebrows (happy) -->
+        <path d="M68 102 Q72 98 76 102" fill="none" stroke="#2a1608" stroke-width="1.5"/>
+        <path d="M84 102 Q88 98 92 102" fill="none" stroke="#2a1608" stroke-width="1.5"/>
+        <!-- Eyes open (happy) -->
+        <g id="m-stand-eyes-open">
+          <ellipse cx="72" cy="111" rx="3.5" ry="4" fill="#2a1608"/>
+          <ellipse cx="88" cy="111" rx="3.5" ry="4" fill="#2a1608"/>
+          <circle cx="73.5" cy="109.5" r="1.3" fill="#fff"/>
+          <circle cx="89.5" cy="109.5" r="1.3" fill="#fff"/>
+        </g>
+        <!-- Eyes closed (kissing) -->
+        <g id="m-stand-eyes-kiss" opacity="0">
+          <path d="M68 111 Q72 106 76 111" fill="none" stroke="#2a1608" stroke-width="1.8"/>
+          <path d="M84 111 Q88 106 92 111" fill="none" stroke="#2a1608" stroke-width="1.8"/>
+          <path d="M68 108 Q72 104 76 108" fill="none" stroke="#2a1608" stroke-width="1"/>
+          <path d="M84 108 Q88 104 92 108" fill="none" stroke="#2a1608" stroke-width="1"/>
+        </g>
+        <!-- Smile -->
+        <path d="M73 121 Q80 127 87 121" fill="none" stroke="#b07050" stroke-width="1.6" stroke-linecap="round"/>
+        <!-- Ears -->
+        <ellipse cx="62" cy="113" rx="5" ry="7" fill="#f0c8a8"/>
+        <ellipse cx="98" cy="113" rx="5" ry="7" fill="#f0c8a8"/>
+        <!-- LEFT ARM - raised to place ring -->
+        <g id="m-arm-ring">
+          <path d="M52 155 Q35 140 20 128"
+                stroke="#f0c8a8" stroke-width="12" stroke-linecap="round" fill="none"/>
+          <ellipse cx="16" cy="125" rx="8" ry="7" fill="#f0c8a8"/>
+        </g>
+        <!-- RIGHT ARM - around woman (kiss pose) -->
+        <g id="m-arm-side">
+          <path d="M108 155 Q122 170 126 195"
+                stroke="#1e1a5e" stroke-width="12" stroke-linecap="round" fill="none"/>
+          <ellipse cx="128" cy="198" rx="8" ry="7" fill="#f0c8a8"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Sparkle elements around ring area -->
+  <div id="sparkles-layer"></div>
+
+  <!-- UI -->
+  <div id="ui">
+    <div id="title-block">
+      <h1>Asmae</h1>
+      <p>A moment from the heart of Abdeljalil</p>
+    </div>
+
+    <div id="celebrate"></div>
+    <div id="msg-box">Will you marry me, Asmae?</div>
+    <div id="btn-group">
+      <button class="btn btn-yes" onclick="onYes()">Yes, I do ✦</button>
+      <button class="btn btn-no" onclick="onNo()">Ask me again…</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Stars ──
+const starsEl = document.getElementById('stars');
+for(let i=0;i<140;i++){
+  const s = document.createElement('div');
+  s.className='star';
+  const size = Math.random()*2.5+0.5;
+  Object.assign(s.style,{
+    width:size+'px', height:size+'px',
+    left:Math.random()*100+'%',
+    top:Math.random()*60+'%',
+    '--d':(2+Math.random()*5)+'s',
+    '--delay':(Math.random()*6)+'s',
+    '--lo':(Math.random()*0.15)+'',
+    '--hi':(0.5+Math.random()*0.5)+''
+  });
+  starsEl.appendChild(s);
+}
+
+// ── Floor petals ──
+const fp = document.getElementById('floor-petals');
+const floorPetalColors=['#f9a8d4','#fda4af','#f0abfc','#c4b5fd','#fce7f3'];
+for(let i=0;i<22;i++){
+  const p=document.createElement('div');
+  p.className='floor-petal';
+  const size=6+Math.random()*10;
+  Object.assign(p.style,{
+    width:size+'px',height:size+'px',
+    background:floorPetalColors[Math.floor(Math.random()*floorPetalColors.length)],
+    bottom:(18+Math.random()*10)+'%',
+    left:(5+Math.random()*90)+'%',
+    '--r':(Math.random()*360)+'deg',
+    transform:'rotate('+Math.random()*360+'deg)'
+  });
+  fp.appendChild(p);
+}
+
+// ── Falling petals ──
+const pl = document.getElementById('petals-layer');
+const petalColors=['#f9a8d4','#fda4af','#f0abfc','#e9d5ff','#fce7f3','#ddd6fe'];
+function createPetal(){
+  const p=document.createElement('div');
+  p.className='fpetal';
+  const size=7+Math.random()*11;
+  Object.assign(p.style,{
+    width:size+'px',height:size+'px',
+    background:petalColors[Math.floor(Math.random()*petalColors.length)],
+    left:(Math.random()*105)+'%',
+    '--fd':(5+Math.random()*7)+'s',
+    '--fdelay':(Math.random()*10)+'s',
+    '--fdx':((Math.random()-0.5)*120)+'px'
+  });
+  pl.appendChild(p);
+  setTimeout(()=>p.remove(),18000);
+}
+for(let i=0;i<35;i++) createPetal();
+setInterval(createPetal,800);
+
+// ── Sparkles around ring ──
+const sl = document.getElementById('sparkles-layer');
+function addSparkles(){
+  const scene = document.getElementById('scene');
+  const rect = scene.getBoundingClientRect();
+  for(let i=0;i<8;i++){
+    const sp=document.createElement('div');
+    sp.className='sparkle';
+    const size=5+Math.random()*9;
+    Object.assign(sp.style,{
+      width:size+'px',height:size+'px',
+      left:(rect.left+rect.width*0.25+Math.random()*80-40)+'px',
+      top:(rect.top+rect.height*0.55+Math.random()*60)+'px',
+      '--sd':(0.8+Math.random()*0.8)+'s',
+      '--sdelay':(Math.random()*2)+'s',
+      '--sx':((Math.random()-0.5)*40)+'px',
+      '--sy':(-20-Math.random()*50)+'px'
+    });
+    sl.appendChild(sp);
+    setTimeout(()=>sp.remove(),4000);
+  }
+}
+setInterval(addSparkles,1200);
+
+// ── Reveal UI ──
+setTimeout(()=>{
+  document.getElementById('msg-box').style.opacity='1';
+  document.getElementById('btn-group').style.opacity='1';
+},1800);
+
+// ── No button ──
+const noMsgs=[
+  "Will you marry me, Asmae? 💍",
+  "My heart beats only for you…",
+  "You are my forever, Asmae…",
+  "Say yes and make me whole…",
+  "Every star up there is a promise to you…",
+  "I've never been more sure of anything…"
+];
+let noIdx=0;
+function onNo(){
+  noIdx=(noIdx+1)%noMsgs.length;
+  const mb=document.getElementById('msg-box');
+  mb.style.opacity='0';
+  setTimeout(()=>{mb.textContent=noMsgs[noIdx];mb.style.opacity='1';},400);
+  const nb=document.querySelector('.btn-no');
+  const alts=["Please? 🥺","I'll wait forever…","Your heart knows…","One more chance?","Give me forever…"];
+  nb.textContent=alts[noIdx%alts.length];
+}
+
+// ── Confetti burst ──
+function burstConfetti(x,y){
+  const colors=['#f472b6','#fbbf24','#a78bfa','#34d399','#f87171','#60a5fa','#fde68a'];
+  for(let i=0;i<60;i++){
+    const c=document.createElement('div');
+    c.className='conf';
+    const size=4+Math.random()*10;
+    const isCircle=Math.random()>0.5;
+    Object.assign(c.style,{
+      position:'absolute',
+      width:size+'px',height:size*(isCircle?1:0.5+Math.random()*1.5)+'px',
+      borderRadius:isCircle?'50%':'2px',
+      background:colors[Math.floor(Math.random()*colors.length)],
+      left:x+'px', top:y+'px',
+      '--cx':((Math.random()-0.5)*400)+'px',
+      '--cy':(-100-Math.random()*350)+'px',
+      '--crot':((Math.random()-0.5)*720)+'deg',
+      '--cd':(1+Math.random()*1.8)+'s',
+      '--cdelay':(Math.random()*0.4)+'s'
+    });
+    document.getElementById('app').appendChild(c);
+    setTimeout(()=>c.remove(),3500);
+  }
+}
+
+// ── Heart burst ──
+function spawnHearts(x,y){
+  const heartChars=['♥','♡','💕','💗','💖'];
+  for(let i=0;i<12;i++){
+    const h=document.createElement('div');
+    h.className='heart-float';
+    h.textContent=heartChars[Math.floor(Math.random()*heartChars.length)];
+    const size=16+Math.random()*24;
+    Object.assign(h.style,{
+      position:'absolute',
+      left:(x+Math.random()*80-40)+'px',
+      top:(y+Math.random()*40)+'px',
+      color:['#f472b6','#f43f5e','#e879a0','#fda4af','#ffd700'][Math.floor(Math.random()*5)],
+      '--hs':size+'px',
+      '--hd':(2+Math.random()*2)+'s',
+      '--hy':(-120-Math.random()*160)+'px',
+      '--hr':((Math.random()-0.5)*30)+'deg'
+    });
+    document.getElementById('app').appendChild(h);
+    setTimeout(()=>h.remove(),4500);
+  }
+}
+
+// ── YES animation sequence ──
+let yesTriggered=false;
+function onYes(){
+  if(yesTriggered)return;
+  yesTriggered=true;
+
+  // Hide buttons
+  const bg=document.getElementById('btn-group');
+  bg.style.transition='opacity 0.5s';
+  bg.style.opacity='0';
+  setTimeout(()=>bg.style.display='none',600);
+
+  const mb=document.getElementById('msg-box');
+  mb.style.opacity='0';
+
+  const manSvg=document.getElementById('man-svg');
+  const scene=document.getElementById('scene');
+  const appRect=document.getElementById('app').getBoundingClientRect();
+  const womanSvg=document.getElementById('woman-svg');
+
+  // PHASE 1: Stand up (0 → 800ms)
+  setTimeout(()=>{
+    // Animate man standing up via CSS
+    manSvg.style.transition='transform 0.9s cubic-bezier(0.34,1.56,0.64,1)';
+    manSvg.style.transform='translateX(-200px) translateY(0)';
+    // Swap kneel/stand groups
+    setTimeout(()=>{
+      document.getElementById('man-kneel').setAttribute('opacity','0');
+      document.getElementById('man-stand').setAttribute('opacity','1');
+    },450);
+
+    // petals burst
+    const sr=scene.getBoundingClientRect();
+    spawnHearts(sr.left+sr.width*0.35, sr.top+sr.height*0.4);
+  }, 300);
+
+  // PHASE 2: Walk toward woman (900ms → 2200ms)
+  setTimeout(()=>{
+    // Walk animation – move man closer to woman
+    manSvg.style.transition='transform 1.3s cubic-bezier(0.45,0,0.55,1)';
+    manSvg.style.transform='translateX(-110px) translateY(0)';
+
+    // Bouncy walk effect with JS
+    let t=0;
+    const walkInt=setInterval(()=>{
+      t+=0.15;
+      const bounce=-Math.abs(Math.sin(t))*8;
+      manSvg.style.transform=`translateX(${-200+90*(t/4.7)}px) translateY(${bounce}px)`;
+      if(t>=4.7){ clearInterval(walkInt); manSvg.style.transform='translateX(-110px) translateY(0)'; }
+    },30);
+  }, 1100);
+
+  // PHASE 3: Place ring on finger (2400ms)
+  setTimeout(()=>{
+    mb.textContent='💍 Slipping the ring on her finger…';
+    mb.style.opacity='1';
+
+    // Animate left arm going toward woman's hand
+    document.getElementById('m-arm-ring').style.transition='transform 0.8s ease';
+
+    // Big sparkle burst where ring goes
+    const sr=scene.getBoundingClientRect();
+    const rx=sr.left+sr.width*0.5;
+    const ry=sr.top+sr.height*0.45;
+    // Many sparkles
+    for(let i=0;i<16;i++){
+      setTimeout(()=>{
+        const sp=document.createElement('div');
+        sp.className='sparkle';
+        const size=8+Math.random()*14;
+        Object.assign(sp.style,{
+          width:size+'px',height:size+'px',
+          left:(rx+Math.random()*60-30)+'px',
+          top:(ry+Math.random()*60-30)+'px',
+          '--sd':'0.9s','--sdelay':'0s',
+          '--sx':((Math.random()-0.5)*60)+'px',
+          '--sy':(-20-Math.random()*80)+'px',
+          zIndex:'100'
+        });
+        document.getElementById('app').appendChild(sp);
+        setTimeout(()=>sp.remove(),2500);
+      },i*60);
+    }
+    spawnHearts(rx-40, ry-20);
+  }, 2500);
+
+  // PHASE 4: Move close and kiss (3500ms)
+  setTimeout(()=>{
+    mb.style.opacity='0';
+    setTimeout(()=>{mb.textContent='';},500);
+
+    // Man steps even closer
+    manSvg.style.transition='transform 0.8s ease-in-out';
+    manSvg.style.transform='translateX(-75px) translateY(0)';
+
+    // Switch to kiss expressions
+    setTimeout(()=>{
+      document.getElementById('w-eyes-open').setAttribute('opacity','0');
+      document.getElementById('w-eyes-closed').setAttribute('opacity','1');
+      document.getElementById('m-stand-eyes-open').setAttribute('opacity','0');
+      document.getElementById('m-stand-eyes-kiss').setAttribute('opacity','1');
+    },700);
+  }, 3500);
+
+  // PHASE 5: CELEBRATION (4400ms)
+  setTimeout(()=>{
+    const cel=document.getElementById('celebrate');
+    cel.innerHTML='She said <span style="color:#ffd700;font-style:normal">YES</span> ✨<br><span style="font-size:0.7em;letter-spacing:2px">Asmae & Abdeljalil — forever & always 💍</span>';
+    cel.style.opacity='1';
+
+    // confetti cannon
+    const sr=scene.getBoundingClientRect();
+    burstConfetti(sr.left+sr.width*0.4, sr.top+sr.height*0.3);
+    setTimeout(()=>burstConfetti(sr.left+sr.width*0.6,sr.top+sr.height*0.2),300);
+    setTimeout(()=>burstConfetti(sr.left+sr.width*0.3,sr.top+sr.height*0.5),600);
+
+    // Hearts every 800ms
+    let hCount=0;
+    const hInt=setInterval(()=>{
+      const cx=sr.left+sr.width*(0.35+Math.random()*0.3);
+      const cy=sr.top+sr.height*(0.2+Math.random()*0.3);
+      spawnHearts(cx,cy);
+      if(++hCount>8)clearInterval(hInt);
+    },700);
+
+    // More petals burst
+    for(let i=0;i<20;i++) createPetal();
+  }, 4400);
+}
+</script>
+</body>
+</html>
